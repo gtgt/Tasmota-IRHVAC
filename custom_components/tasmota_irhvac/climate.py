@@ -9,7 +9,7 @@ import homeassistant.util.dt as dt_util
 
 from homeassistant.components import mqtt
 from homeassistant.components.mqtt.mixins import (
-    MqttAvailability,
+    MqttAvailabilityMixin,
     MQTT_AVAILABILITY_SCHEMA,
     CONF_AVAILABILITY_TOPIC,
 )
@@ -455,7 +455,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         )
 
 
-class TasmotaIrhvac(ClimateEntity, RestoreEntity, MqttAvailability):
+class TasmotaIrhvac(ClimateEntity, RestoreEntity, MqttAvailabilityMixin):
     """Representation of a Generic Thermostat device."""
 
     # It can remove from HA >= 2025.1
@@ -549,7 +549,7 @@ class TasmotaIrhvac(ClimateEntity, RestoreEntity, MqttAvailability):
                 "payload_not_available": "Offline",
             }
         )
-        MqttAvailability.__init__(self, mqtt_availability_config)
+        MqttAvailabilityMixin.__init__(self, mqtt_availability_config)
 
     async def async_added_to_hass(self):
         # Replacing `async_track_state_change` with `async_track_state_change_event`
@@ -814,7 +814,7 @@ class TasmotaIrhvac(ClimateEntity, RestoreEntity, MqttAvailability):
         self._sub_state = await mqtt.subscription.async_unsubscribe_topics(
             self.hass, self._sub_state
         )
-        await MqttAvailability.async_will_remove_from_hass(self)
+        await MqttAvailabilityMixin.async_will_remove_from_hass(self)
 
     @property
     def extra_state_attributes(self):
